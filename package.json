@@ -1,0 +1,11 @@
+{
+    "name": "RC5",
+    "version": "0.1.0",
+    "description": "RC-5 cipher protocol",
+    "keywords": "rc5",
+    "license": "MIT",
+    "main": "rc5.js",
+    "scripts": {
+        "test": "node test.js"
+    }
+}
