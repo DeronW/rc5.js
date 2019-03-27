@@ -1,7 +1,3 @@
-function log() {
-    console.log(...arguments);
-}
-
 // Pw, Qw are magic constants
 const Pw = {
     16: Buffer.from([0xb7, 0xe1]),
@@ -148,6 +144,7 @@ class RC5 {
         this.S = [];
         this._expand();
     }
+
     get _params() {
         let { w, r, b, K } = this.controlBlock,
             t = 2 * (r + 1),
@@ -156,12 +153,14 @@ class RC5 {
             S = this.S;
         return { w, r, b, K, t, u, c, S };
     }
+
     _expand() {
         let L = expandL(this._params);
         let S = expandS(this._params);
         mixin(this._params, S, L);
         this.S = S;
     }
+
     _parseBuffer(str) {
         let buf = Buffer.from(str),
             { u } = this._params,
@@ -170,6 +169,7 @@ class RC5 {
         if (gap) buf = Buffer.concat([buf], buf.length + gap);
         return buf;
     }
+
     _process(source, type) {
         let buf = this._parseBuffer(source),
             { u } = this._params,
@@ -186,9 +186,11 @@ class RC5 {
         }
         return buf;
     }
+
     encrypt(text) {
         return this._process(text, "encrypt");
     }
+
     decrypt(cipher) {
         let filled = this._process(cipher, "decrypt"),
             pos = filled.length - 1;
@@ -198,12 +200,3 @@ class RC5 {
 }
 
 module.exports = RC5;
-
-let key = [1, 2, 3];
-let rc = new RC5(key, 32, 0);
-log("=======");
-log("SSS", rc.S);
-//let cipher = rc.encrypt(Buffer.from([0x01]));
-//log(cipher)
-let text = rc.decrypt(Buffer.from([0xff, 0x04, 0x80, 0x3e, 0x0e, 0x1a, 0x8a, 0x0b]));
-log(text);
