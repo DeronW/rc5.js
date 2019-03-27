@@ -1,13 +1,12 @@
 {
     "name": "rc5",
-    "version": "0.1.0",
+    "version": "0.2.1",
     "description": "RC-5 cipher protocol, https://en.wikipedia.org/wiki/RC5",
     "keywords": [
         "rc5",
         "encryption"
     ],
     "license": "MIT",
-    "main": "rc5.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/ashleygwilliams/my_package.git"

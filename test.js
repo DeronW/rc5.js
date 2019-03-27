@@ -1,6 +1,6 @@
 const assert = require("assert").strict;
 
-const RC5 = require("./rc5.js");
+const RC5 = require("./index.js");
 let rc5, plain, cipher;
 
 function parseBuf(s) {
