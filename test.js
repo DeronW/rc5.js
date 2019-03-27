@@ -1,7 +1,7 @@
 const assert = require("assert").strict;
 
 const RC5 = require("./rc5.js");
-let rc5;
+let rc5, plain, cipher;
 
 function parseBuf(s) {
     // "<Buffer d9 62 60 3f 8d b9 09 9f>"
@@ -39,4 +39,7 @@ assert.ok(
 
 // normal params
 rc5 = new RC5([1, 2, 3]);
-rc5.encrypt('桜')
+let sakula = "桜";
+cipher = rc5.encrypt(sakula);
+plain = rc5.decrypt(cipher);
+assert.ok(sakula == plain.toString());

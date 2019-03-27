@@ -27,7 +27,7 @@ function add(A, B) {
 function minus(A, B) {
     let buf = Buffer.alloc(A.length),
         borrow = 0;
-    for (let i = A.length - 1; i > 0; i--) {
+    for (let i = A.length - 1; i >= 0; i--) {
         let t = A[i] - B[i] - borrow;
         borrow = t < 0 ? 1 : 0;
         buf[i] = t;
@@ -80,7 +80,7 @@ function rotl(B, n) {
 }
 
 function rotr(B, n) {
-    return rotl(B, B.length - n);
+    return rotl(B, B.length * 8 - n);
 }
 
 function expandL({ K, u, c }) {
@@ -111,20 +111,20 @@ function mixin({ w, t, c, u }, S, L) {
     return S;
 }
 
-function encryption({ r, S }, A, B) {
+function encryption({ r, S, w }, A, B) {
     A = add(A, S[0]);
     B = add(B, S[1]);
     for (let i = 1; i <= r; i++) {
-        A = add(rotl(xor(A, B), B), S[2 * i]);
-        B = add(rotl(xor(B, A), A), S[2 * i + 1]);
+        A = add(rotl(xor(A, B), mod(B, w)), S[2 * i]);
+        B = add(rotl(xor(B, A), mod(A, w)), S[2 * i + 1]);
     }
     return [A.reverse(), B.reverse()];
 }
 
-function decryption({ r, S }, A, B) {
+function decryption({ r, S, w }, A, B) {
     for (let i = r; i > 0; i--) {
-        B = xor(rotr(minus(B, S[2 * i + 1])), A);
-        A = xor(rotr(A, S[2 * i]), B);
+        B = xor(rotr(minus(B, S[2 * i + 1]), mod(A, w)), A);
+        A = xor(rotr(minus(A, S[2 * i]), mod(B, w)), B);
     }
     B = minus(B, S[1]);
     A = minus(A, S[0]);
