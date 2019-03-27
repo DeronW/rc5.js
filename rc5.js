@@ -1,14 +1,16 @@
+"use strict";
+
 // Pw, Qw are magic constants
 const Pw = {
     16: Buffer.from([0xb7, 0xe1]),
     32: Buffer.from([0xb7, 0xe1, 0x51, 0x63]),
-    64: Buffer.from([0xb7, 0xe1, 0x51, 0x62, 0x8a, 0xed, 0x2a, 0x6b]),
+    64: Buffer.from([0xb7, 0xe1, 0x51, 0x62, 0x8a, 0xed, 0x2a, 0x6b])
 };
 
 const Qw = {
     16: Buffer.from([0x9e, 0x37]),
     32: Buffer.from([0x9e, 0x37, 0x79, 0xb9]),
-    64: Buffer.from([0x9e, 0x37, 0x79, 0xb9, 0x7f, 0x4a, 0x7c, 0x15]),
+    64: Buffer.from([0x9e, 0x37, 0x79, 0xb9, 0x7f, 0x4a, 0x7c, 0x15])
 };
 
 function add(A, B) {
@@ -53,8 +55,6 @@ function merge(A, B, fn) {
 }
 
 let xor = (A, B) => merge(A, B, (a, b) => a ^ b);
-let and = (A, B) => merge(A, B, (a, b) => a & b);
-let or = (A, B) => merge(A, B, (a, b) => a | b);
 
 function mod(B, n) {
     if (B.length == 8) {
@@ -83,7 +83,7 @@ function rotr(B, n) {
     return rotl(B, B.length - n);
 }
 
-function expandL({ w, b, K, u, c }) {
+function expandL({ K, u, c }) {
     let L = new Array(c).fill(null),
         filledK = Buffer.concat([K], c * u);
     for (let i = 0; i < c; i++) L[i] = filledK.slice(i * u, (i + 1) * u).reverse();
@@ -132,7 +132,7 @@ function decryption({ r, S }, A, B) {
 }
 
 class RC5 {
-    constructor(key, w = 32, r = 12) {
+    constructor(key = "", w = 32, r = 12) {
         let K = Buffer.from(key),
             b = K.length; // number of bytes in key
 
@@ -173,7 +173,6 @@ class RC5 {
     _process(source, type) {
         let buf = this._parseBuffer(source),
             { u } = this._params,
-            blocks = [],
             handle;
         if (type == "encrypt") handle = encryption;
         if (type == "decrypt") handle = decryption;
