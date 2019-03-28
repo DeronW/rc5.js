@@ -13,6 +13,8 @@ const Qw = {
     64: Buffer.from([0x9e, 0x37, 0x79, 0xb9, 0x7f, 0x4a, 0x7c, 0x15])
 };
 
+// why I don't use BigInt
+// https://github.com/tc39/proposal-bigint/issues/40
 function add(A, B) {
     let buf = Buffer.alloc(A.length),
         carry = 0;
@@ -38,9 +40,6 @@ function minus(A, B) {
 function assign(A, B) {
     for (let i = 0; i < A.length; i++) A[i] = B[i];
 }
-
-// why I don't use BigInt
-// https://github.com/tc39/proposal-bigint/issues/40
 
 /*
  * exclusive OR funciton used for merge two buffer
@@ -178,7 +177,7 @@ class RC5 {
         if (type == "decrypt") handle = decryption;
         for (let i = 0; i < buf.length; i += 2 * u) {
             let A = buf.slice(i, i + u).reverse(),
-                B = buf.slice(i + u, i + u * u).reverse();
+                B = buf.slice(i + u, i + u * 2).reverse();
             let [newA, newB] = handle(this._params, A, B);
             assign(A, newA);
             assign(B, newB);

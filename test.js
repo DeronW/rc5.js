@@ -1,7 +1,7 @@
 const assert = require("assert").strict;
 
 const RC5 = require("./index.js");
-let rc5, plain, cipher;
+let rc5, source, plain, cipher;
 
 function parseBuf(s) {
     // "<Buffer d9 62 60 3f 8d b9 09 9f>"
@@ -39,7 +39,19 @@ assert.ok(
 
 // normal params
 rc5 = new RC5([1, 2, 3]);
-let sakula = "桜";
-cipher = rc5.encrypt(sakula);
+source = "桜";
+cipher = rc5.encrypt(source);
 plain = rc5.decrypt(cipher);
-assert.ok(sakula == plain.toString());
+assert.ok(source == plain.toString());
+
+// complex params
+rc5 = new RC5("shakespeare", 64, 255);
+source = `
+Two loves I have of comfort and despair,
+Which like two spirits do suggest me still:
+The better angel is a man right fair,
+The worser spirit a woman color’d ill.
+`;
+cipher = rc5.encrypt(source);
+plain = rc5.decrypt(cipher);
+assert.ok(source == plain.toString());

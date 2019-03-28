@@ -1,26 +1,33 @@
 # RC5
 
-RC5: https://en.wikipedia.org/wiki/RC5
+what is RC5: https://en.wikipedia.org/wiki/RC5
 
 This implementation keep to paper: http://people.csail.mit.edu/rivest/Rivest-rc5rev.pdf
 
 ## Usage
 
+#### installation
+
+> npm install rc5
+
+#### sample
+
 ```javascript
 import RC5 from "rc5";
 
-let key = "some key";
+let key = "whisper";
 
 let rc5 = new RC5(key);
 
 // Encryption
-rc5.encrypt("plaintext");
-// => <Buffer 58 39 b6 71 00 00 00 00 58 39 b6 71 8d 2e b5 17>
+let enBuf = rc5.encrypt("plain");
+// => <Buffer 47 f1 b4 5c 8d e5 6d e3>
 
 // Decryption
-let buf = Buffer.from([0x01, 0x02, 0x03, 0x4, 0x5, 0x6]);
-rc5.decrypt(buf);
-// => <Buffer d9 be ea 00 ed e7 d7>
+let deBuf = rc5.decrypt(enBuf);
+// => <Buffer 70 6c 61 69 6e>
+deBuf.toString();
+// => plain
 ```
 
 ## Documentation
@@ -52,7 +59,7 @@ rc5 = new RC5("secret key", 32, 12);
 rc5 = new RC5();
 
 // use most complex secure level
-rct = new RC5("", 64, 255);
+rct = new RC5(Buffer.from("... a 255 bytes length key..."), 64, 255);
 ```
 
 #### rc5.encrypt(plaintext)
@@ -65,9 +72,9 @@ Example: encryption
 const RC5 = require("rc5");
 const rc5 = new RC5("key");
 rc5.encrypt(Buffer.from([1, 2, 3, 4, 5, 6]));
-// =>
+// => <Buffer fe 14 e1 42 64 2b db de>
 rc5.encrypt("桜の花");
-// =>
+// => <Buffer d8 66 d5 3b b5 d4 91 7e c5 06 98 10 8a 63 d7 d3>
 ```
 
 #### rc5.decrypt(ciphertext)
@@ -79,10 +86,31 @@ Example: decryption
 ```javascript
 const RC5 = require("rc5");
 const rc5 = new RC5("key");
-rc5.encrypt(Buffer.from([1, 2, 3, 4, 5, 6]));
-// =>
-rc5.encrypt("桜の花");
-// =>
+rc5.decrypt(Buffer.from([0xfe, 0x14, 0xe1, 0x42, 0x64, 0x2b, 0xdb, 0xde]));
+// => <Buffer 01 02 03 04 05 06>
+let buf = rc5.decrypt(
+    Buffer.from([
+        0xd8,
+        0x66,
+        0xd5,
+        0x3b,
+        0xb5,
+        0xd4,
+        0x91,
+        0x7e,
+        0xc5,
+        0x06,
+        0x98,
+        0x10,
+        0x8a,
+        0x63,
+        0xd7,
+        0xd3
+    ])
+);
+// => <Buffer e6 a1 9c e3 81 ae e8 8a b1>
+buf.toString();
+// => '桜の花'
 ```
 
 ## Specification
@@ -101,12 +129,7 @@ None of such type could be used in RC5 cryption either. none of these type could
 
 all of them has same problem
 
-## Browser support
-
-Recently browser does't support `Buffer` yet.
-if you want use this in browser.
-I recommend combined a polyfill, such as [buffer](https://www.npmjs.com/package/buffer)
-
 #### TODO
 
+-   [ ] browser support
 -   [ ] typescript support
