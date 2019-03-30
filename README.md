@@ -1,6 +1,6 @@
 # RC5
 
-what is RC5: https://en.wikipedia.org/wiki/RC5
+What is RC5: https://en.wikipedia.org/wiki/RC5
 
 This implementation keep to paper: http://people.csail.mit.edu/rivest/Rivest-rc5rev.pdf
 
@@ -131,7 +131,7 @@ all of them has same problem
 
 #### TODO
 
-[ ] eslint integrate
-[ ] travis integrate
-[ ] browser support
-[ ] typescript support
+- [ ] eslint integrate
+- [ ] travis integrate
+- [ ] browser support
+- [ ] typescript support
