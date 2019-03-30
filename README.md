@@ -10,7 +10,7 @@ This implementation keep to paper: http://people.csail.mit.edu/rivest/Rivest-rc5
 
 > npm install rc5
 
-#### sample
+#### example
 
 ```javascript
 import RC5 from "rc5";
@@ -131,5 +131,7 @@ all of them has same problem
 
 #### TODO
 
--   [ ] browser support
--   [ ] typescript support
+[ ] eslint integrate
+[ ] travis integrate
+[ ] browser support
+[ ] typescript support
