@@ -133,7 +133,7 @@ all of them has same problem
 
 #### TODO
 
-- [ ] eslint integrate
+- [x] eslint integrate
 - [ ] travis integrate
 - [ ] browser support
 - [ ] typescript support
