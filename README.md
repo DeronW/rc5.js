@@ -134,6 +134,6 @@ all of them has same problem
 #### TODO
 
 - [x] eslint integrate
-- [ ] travis integrate
+- [x] travis integrate
 - [ ] browser support
 - [ ] typescript support
