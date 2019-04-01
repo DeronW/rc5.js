@@ -136,9 +136,10 @@ class RC5 {
             b = K.length; // number of bytes in key
 
         this.controlBlock = { w, r, b, K };
-        if (![16, 32, 64].includes(w)) throw new Error(`parameter w must one of 16, 32 or 64`);
-        if (r > 255) throw new Error(`Parameter r must be less than 256. got ${r}`);
-        if (b > 255) throw new Error(`Secret key is too long. more than 255 bytes`);
+        if (![16, 32, 64].includes(w))
+            throw new Error(`parameter w must one of 16, 32 or 64, but got ${w}`);
+        if (r > 255) throw new Error(`Parameter r must be less than 256, but got ${r}`);
+        if (b > 255) throw new Error(`Secret key is too long. more than 255 bytes, but got ${b}`);
 
         this.S = [];
         this._expand();

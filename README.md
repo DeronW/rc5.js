@@ -8,7 +8,9 @@ This implementation keep to paper: http://people.csail.mit.edu/rivest/Rivest-rc5
 
 #### installation
 
-> npm install rc5
+```shell
+npm install rc5
+```
 
 #### example
 
