@@ -1,6 +1,6 @@
 {
     "name": "rc5",
-    "version": "0.6.0",
+    "version": "1.0.0",
     "description": "RC-5 cipher protocol, https://en.wikipedia.org/wiki/RC5",
     "keywords": [
         "rc5",
@@ -13,9 +13,10 @@
     },
     "author": "delong",
     "scripts": {
-        "test": "node test.js"
+        "test": "jest --coverage"
     },
     "devDependencies": {
-        "eslint": "^5.16.0"
+        "eslint": "^5.16.0",
+        "jest": "^24.5.0"
     }
 }

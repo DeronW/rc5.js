@@ -116,6 +116,7 @@ all of them has same problem
 
 #### TODO
 
+- [x] unit testing & 100% test coverage
 - [x] eslint integrate
 - [x] travis integrate
 - [ ] browser support

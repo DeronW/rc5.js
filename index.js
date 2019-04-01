@@ -60,7 +60,8 @@ function mod(B, n) {
         return ((B.readUInt32BE(0) % n) * 2 ** 32 + B.readUInt32BE(4)) % n;
     } else if (B.length == 4) {
         return B.readUInt32BE(0) % n;
-    } else if (B.length == 2) {
+    } else {
+        //  B.length == 2
         return B.readUInt16BE(0) % n;
     }
 }
