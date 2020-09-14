@@ -1,21 +1,19 @@
-"use strict";
-
 // Pw, Qw are magic constants
 const Pw = {
     16: Buffer.from([0xb7, 0xe1]),
     32: Buffer.from([0xb7, 0xe1, 0x51, 0x63]),
-    64: Buffer.from([0xb7, 0xe1, 0x51, 0x62, 0x8a, 0xed, 0x2a, 0x6b])
+    64: Buffer.from([0xb7, 0xe1, 0x51, 0x62, 0x8a, 0xed, 0x2a, 0x6b]),
 };
 
 const Qw = {
     16: Buffer.from([0x9e, 0x37]),
     32: Buffer.from([0x9e, 0x37, 0x79, 0xb9]),
-    64: Buffer.from([0x9e, 0x37, 0x79, 0xb9, 0x7f, 0x4a, 0x7c, 0x15])
+    64: Buffer.from([0x9e, 0x37, 0x79, 0xb9, 0x7f, 0x4a, 0x7c, 0x15]),
 };
 
-// why I don't use BigInt
+// Why don't I use BigInt
 // https://github.com/tc39/proposal-bigint/issues/40
-function add(A, B) {
+function add(A: Buffer, B: Buffer): Buffer {
     let buf = Buffer.alloc(A.length),
         carry = 0;
     for (let i = A.length - 1; i >= 0; i--) {
@@ -26,7 +24,7 @@ function add(A, B) {
     return buf;
 }
 
-function minus(A, B) {
+function minus(A: Buffer, B: Buffer): Buffer {
     let buf = Buffer.alloc(A.length),
         borrow = 0;
     for (let i = A.length - 1; i >= 0; i--) {
@@ -37,7 +35,7 @@ function minus(A, B) {
     return buf;
 }
 
-function assign(A, B) {
+function assign(A: Buffer, B: Buffer): void {
     for (let i = 0; i < A.length; i++) A[i] = B[i];
 }
 
@@ -45,17 +43,15 @@ function assign(A, B) {
  * exclusive OR funciton used for merge two buffer
  * the reason why does't use Integer same as funciton `add` or `minus`
  */
-function merge(A, B, fn) {
+function merge(A: Buffer, B: Buffer, fn: (a: number, b: number) => number) {
     let buf = Buffer.alloc(A.length);
-    for (let i = 0; i < A.length; i++) {
-        buf[i] = fn(A[i], B[i]);
-    }
+    for (let i = 0; i < A.length; i++) buf[i] = fn(A[i], B[i]);
     return buf;
 }
 
-let xor = (A, B) => merge(A, B, (a, b) => a ^ b);
+let xor = (A: Buffer, B: Buffer): Buffer => merge(A, B, (a, b) => a ^ b);
 
-function mod(B, n) {
+function mod(B: Buffer, n: number): number {
     if (B.length == 8) {
         return ((B.readUInt32BE(0) % n) * 2 ** 32 + B.readUInt32BE(4)) % n;
     } else if (B.length == 4) {
@@ -66,7 +62,7 @@ function mod(B, n) {
     }
 }
 
-function rotl(B, n) {
+function rotl(B: Buffer, n: number): Buffer {
     let buf = Buffer.alloc(B.length),
         templ = Buffer.concat([B, B]),
         index = Math.floor(n / 8),
@@ -79,18 +75,19 @@ function rotl(B, n) {
     return buf;
 }
 
-function rotr(B, n) {
+function rotr(B: Buffer, n: number): Buffer {
     return rotl(B, B.length * 8 - n);
 }
 
-function expandL({ K, u, c }) {
+function expandL({ K, u, c }: Pick<Params, "K" | "u" | "c">): Array<Buffer> {
     let L = new Array(c).fill(null),
         filledK = Buffer.concat([K], c * u);
-    for (let i = 0; i < c; i++) L[i] = filledK.slice(i * u, (i + 1) * u).reverse();
+    for (let i = 0; i < c; i++)
+        L[i] = filledK.slice(i * u, (i + 1) * u).reverse();
     return L;
 }
 
-function expandS({ w, t }) {
+function expandS({ w, t }: Pick<Params, "w" | "t">): Array<Buffer> {
     let P = Pw[w],
         Q = Qw[w],
         S = [P];
@@ -98,7 +95,11 @@ function expandS({ w, t }) {
     return S;
 }
 
-function mixin({ w, t, c, u }, S, L) {
+function mixin(
+    { w, t, c, u }: Pick<Params, "w" | "t" | "c" | "u">,
+    S: Array<Buffer>,
+    L: Array<Buffer>
+) {
     let count = Math.max(c, t) * 3,
         A = Buffer.alloc(u),
         B = Buffer.alloc(u);
@@ -111,7 +112,14 @@ function mixin({ w, t, c, u }, S, L) {
     return S;
 }
 
-function encryption({ r, S, w }, A, B) {
+interface Cryption {
+    args: Pick<Params, "r" | "w">;
+    S: Array<Buffer>;
+    A: Buffer;
+    B: Buffer;
+}
+
+function encryption({ args: { r, w }, S, A, B }: Cryption): [Buffer, Buffer] {
     A = add(A, S[0]);
     B = add(B, S[1]);
     for (let i = 1; i <= r; i++) {
@@ -121,7 +129,7 @@ function encryption({ r, S, w }, A, B) {
     return [A.reverse(), B.reverse()];
 }
 
-function decryption({ r, S, w }, A, B) {
+function decryption({ args: { r, w }, S, A, B }: Cryption): [Buffer, Buffer] {
     for (let i = r; i > 0; i--) {
         B = xor(rotr(minus(B, S[2 * i + 1]), mod(A, w)), A);
         A = xor(rotr(minus(A, S[2 * i]), mod(B, w)), B);
@@ -131,72 +139,93 @@ function decryption({ r, S, w }, A, B) {
     return [A.reverse(), B.reverse()];
 }
 
+type TypedW = 16 | 32 | 64;
+type Source = string | Buffer;
+
+interface Params {
+    K: Buffer;
+    u: number;
+    c: number;
+    w: TypedW;
+    r: number;
+    b: number;
+    t: number;
+}
+
+type ControlBlock = Readonly<Pick<Params, "w" | "r" | "b" | "K">>;
+
 class RC5 {
-    constructor(key = "", w = 32, r = 12) {
+    private cb: ControlBlock;
+    private fullParams: Params;
+    S: Array<Buffer>;
+
+    constructor(key = "", w: TypedW = 32, r = 12) {
         let K = Buffer.from(key),
             b = K.length; // number of bytes in key
 
-        this.controlBlock = { w, r, b, K };
-        if (![16, 32, 64].includes(w))
-            throw new Error(`parameter w must one of 16, 32 or 64, but got ${w}`);
-        if (r > 255) throw new Error(`Parameter r must be less than 256, but got ${r}`);
-        if (b > 255) throw new Error(`Secret key is too long. more than 255 bytes, but got ${b}`);
+        this.cb = { w, r, b, K };
+        if (r > 255)
+            throw new Error(`Parameter r must be less than 256, got ${r}`);
+        if (b > 255)
+            throw new Error(
+                `Secret key is too long. must less than 255 bytes, got ${b}`
+            );
 
         this.S = [];
-        this._expand();
+        this.fullParams = this.initParams();
+        this.expand();
     }
 
-    get _params() {
-        let { w, r, b, K } = this.controlBlock,
+    private initParams() {
+        let { w, r, b, K } = this.cb,
             t = 2 * (r + 1),
             u = w / 8,
-            c = Math.ceil(b / u) || 1,
-            S = this.S;
-        return { w, r, b, K, t, u, c, S };
+            c = Math.ceil(b / u) || 1;
+        return { w, r, b, K, t, u, c };
     }
 
-    _expand() {
-        let L = expandL(this._params);
-        let S = expandS(this._params);
-        mixin(this._params, S, L);
+    private expand(): void {
+        let L: Array<Buffer> = expandL(this.fullParams);
+        let S: Array<Buffer> = expandS(this.fullParams);
+        mixin(this.fullParams, S, L);
         this.S = S;
     }
 
-    _parseBuffer(str) {
-        let buf = Buffer.from(str),
-            { u } = this._params,
+    private parseBuffer(s: Source): Buffer {
+        let buf = Buffer.from(s),
+            { u } = this.fullParams,
             u2 = u * 2,
             gap = (u2 - (buf.length % u2)) % u2;
         if (gap) buf = Buffer.concat([buf], buf.length + gap);
         return buf;
     }
 
-    _process(source, type) {
-        let buf = this._parseBuffer(source),
-            { u } = this._params,
-            handle;
-        if (type == "encrypt") handle = encryption;
-        if (type == "decrypt") handle = decryption;
+    private process(
+        source: Source,
+        handle: (args: Cryption) => [Buffer, Buffer]
+    ): Buffer {
+        let buf = this.parseBuffer(source),
+            { u, r, w } = this.fullParams;
         for (let i = 0; i < buf.length; i += 2 * u) {
             let A = buf.slice(i, i + u).reverse(),
                 B = buf.slice(i + u, i + u * 2).reverse();
-            let [newA, newB] = handle(this._params, A, B);
+            let [newA, newB] = handle({ args: { r, w }, S: this.S, A, B });
             assign(A, newA);
             assign(B, newB);
         }
         return buf;
     }
 
-    encrypt(text) {
-        return this._process(text, "encrypt");
+    encrypt(plain: string | Buffer): Buffer {
+        return this.process(plain, encryption);
     }
 
-    decrypt(cipher) {
-        let filled = this._process(cipher, "decrypt"),
+    decrypt(cipher: string | Buffer): Buffer {
+        let filled = this.process(cipher, decryption),
             pos = filled.length - 1;
         while (filled[pos] == 0) pos--;
         return filled.slice(0, pos + 1);
     }
 }
 
-module.exports = RC5;
+export default RC5;

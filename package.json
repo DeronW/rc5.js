@@ -1,6 +1,6 @@
 {
     "name": "rc5",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "RC-5 cipher protocol, https://en.wikipedia.org/wiki/RC5",
     "keywords": [
         "rc5",
@@ -12,11 +12,16 @@
         "url": "https://github.com/DeronW/rc5.js"
     },
     "author": "delong",
+    "files": ["lib/*"],
+    "main": "lib/index.js",
     "scripts": {
-        "test": "jest --coverage"
+        "test": "jest --coverage",
+        "build": "tsc",
+        "test_old": "jest --coverage old/__tests__/index.js"
     },
     "devDependencies": {
-        "eslint": "^5.16.0",
-        "jest": "^24.5.0"
+        "jest": "26.4.2",
+        "ts-jest": "26.3.0",
+        "typescript": "4.0.2"
     }
 }
