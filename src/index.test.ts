@@ -52,7 +52,7 @@ test("fast encryption", () => {
     source = "桜",
     cipher = rc5.encrypt(source),
     plain = rc5.decrypt(cipher);
-  expect(source).toBe(plain.toString());
+  expect(plain.toString()).toBe(source);
 });
 
 test("standard(default) encryption, w/r/b 32/12/0", () => {
@@ -71,7 +71,7 @@ The better angel is a man right fair,
 The worser spirit a woman color’d ill.`,
     cipher = rc5.encrypt(source),
     plain = rc5.decrypt(cipher);
-  expect(source).toBe(plain.toString());
+  expect(plain.toString()).toBe(source);
 });
 
 test("standard with UTF8 coding", () => {
@@ -79,5 +79,16 @@ test("standard with UTF8 coding", () => {
     source = "🐁🐂🐅🐇🐉🐍🐎🐐🐒🐓🐕🐖",
     cipher = rc5.encrypt(source),
     plain = rc5.decrypt(cipher);
-  expect(source).toBe(plain.toString());
+  expect(plain.toString()).toBe(source);
+});
+
+test("issue: https://github.com/DeronW/rc5.js/issues/12", () => {
+  const rc5 = new RC5("a key", 64, 255);
+  const ptBinary = Uint8Array.from([1, 2, 3, 4, 5, 0, 0]);
+  const encrypted = rc5.encrypt(Buffer.from(ptBinary));
+  const decrypted = rc5.decrypt(encrypted, { trim: false });
+  const decryptedBinary = new Uint8Array(decrypted);
+  expect(decryptedBinary).toStrictEqual(
+    Uint8Array.from([1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  );
 });

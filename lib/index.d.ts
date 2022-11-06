@@ -10,7 +10,9 @@ declare class RC5 {
     private parseBuffer;
     private process;
     encrypt(plain: string | Buffer): Buffer;
-    decrypt(cipher: string | Buffer): Buffer;
+    decrypt(cipher: string | Buffer, options?: {
+        trim?: boolean;
+    }): Buffer;
 }
 export default RC5;
 //# sourceMappingURL=index.d.ts.map

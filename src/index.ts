@@ -219,8 +219,9 @@ class RC5 {
     return this.process(plain, encryption);
   }
 
-  decrypt(cipher: string | Buffer): Buffer {
+  decrypt(cipher: string | Buffer, options?: { trim?: boolean }): Buffer {
     const filled = this.process(cipher, decryption);
+    if (options?.trim === false) return filled;
     let pos = filled.length - 1;
     while (filled[pos] == 0) pos--;
     return filled.subarray(0, pos + 1);

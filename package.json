@@ -1,6 +1,6 @@
 {
     "name": "rc5",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "RC-5 cipher protocol, https://en.wikipedia.org/wiki/RC5",
     "keywords": [
         "rc5",
